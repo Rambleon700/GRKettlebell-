@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kettlebell Muscle Map</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --accent: #e67e22;
+      --text: #ecf0f1;
+      --muted: #95a5a6;
+      --border: #2c3e50;
+      --primary: #e74c3c;
+      --secondary: #f39c12;
+      --idle: #2c3e50;
+      --skin: #3d4f5f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    header {
+      text-align: center;
+      padding: 1.25rem 0 1rem;
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: 1.25rem;
+    }
+    header h1 { font-size: 1.7rem; color: var(--accent); }
+    header p { color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem; }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.15rem;
+      margin-bottom: 1.15rem;
+      border: 1px solid var(--border);
+    }
+    .card h2 { font-size: 1.1rem; margin-bottom: 0.85rem; color: var(--accent); }
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.25rem; }
+    select {
+      width: 100%;
+      max-width: 420px;
+      padding: 0.65rem 0.8rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1rem;
+    }
+    select:focus { outline: none; border-color: var(--accent); }
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 800px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .body-wrap {
+      text-align: center;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+    }
+    .body-wrap h3 {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    svg { max-width: 100%; height: auto; }
+    .muscle { fill: var(--idle); stroke: #1a2332; stroke-width: 1; transition: fill 0.25s; cursor: default; }
+    .muscle.primary { fill: var(--primary); }
+    .muscle.secondary { fill: var(--secondary); }
+    .silhouette { fill: var(--skin); opacity: 0.35; }
+    .legend {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 1rem 0 0.5rem;
+      font-size: 0.9rem;
+    }
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .swatch {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .swatch.primary { background: var(--primary); }
+    .swatch.secondary { background: var(--secondary); }
+    .swatch.idle { background: var(--idle); }
+    .info {
+      margin-top: 1rem;
+      padding: 0.9rem 1rem;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      min-height: 4.5rem;
+    }
+    .info h3 { color: var(--accent); font-size: 1.05rem; margin-bottom: 0.35rem; }
+    .info p { color: var(--muted); font-size: 0.9rem; }
+    .tags { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .tag.p { background: rgba(231,76,60,0.25); color: #f5b7b1; }
+    .tag.s { background: rgba(243,156,18,0.25); color: #f9e79f; }
+    .exercise-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.45rem;
+      margin-top: 0.75rem;
+    }
+    .ex-btn {
+      padding: 0.5rem 0.6rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+    .ex-btn:hover { border-color: var(--accent); }
+    .ex-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    footer {
+      text-align: center;
+      padding: 1.25rem 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Kettlebell Muscle Map</h1>
+      <p>Male anatomy colour-coded by muscles worked — matches Kettlebell Logbook exercises</p>
+    </header>
+
+    <div class="card">
+      <h2>Select exercise</h2>
+      <label for="exerciseSelect">Exercise</label>
+      <select id="exerciseSelect">
+        <option value="">— Choose or tap a button below —</option>
+        <optgroup label="Swings">
+          <option>Kettlebell Swings</option>
+          <option>Two-Handed Swings</option>
+          <option>One-Arm Swings</option>
+          <option>American Swings</option>
+        </optgroup>
+        <optgroup label="Presses &amp; Cleans">
+          <option>Shoulder Press</option>
+          <option>Overhead Press</option>
+          <option>Forward Press</option>
+          <option>Clean</option>
+          <option>Clean &amp; Press</option>
+          <option>Snatch</option>
+        </optgroup>
+        <optgroup label="Squats &amp; Deadlift">
+          <option>Goblet Squats</option>
+          <option>Deadlift</option>
+        </optgroup>
+        <optgroup label="Core &amp; Rotation">
+          <option>Plank Pull Through</option>
+          <option>Plank Drags</option>
+          <option>Twist on Knees</option>
+          <option>Half Knee Woodchop</option>
+          <option>Towel Reaper</option>
+          <option>Russian Twists</option>
+          <option>Sitting Twist</option>
+          <option>Standing Twist</option>
+          <option>Axe Swings / Woodchoppers</option>
+        </optgroup>
+        <optgroup label="Other">
+          <option>Halo</option>
+          <option>Upright Row</option>
+          <option>Bicep Curls</option>
+          <option>Tricep Overhead</option>
+          <option>Turkish Get-Up</option>
+          <option>Single-Arm Row</option>
+          <option>Windmill</option>
+          <option>Figure-8</option>
+          <option>Around the World</option>
+          <option>Farmers Carry</option>
+        </optgroup>
+      </select>
+      <div class="exercise-grid" id="exButtons"></div>
+    </div>
+
+    <div class="legend">
+      <span><i class="swatch primary"></i> Primary</span>
+      <span><i class="swatch secondary"></i> Secondary</span>
+      <span><i class="swatch idle"></i> Not targeted</span>
+    </div>
+
+    <div class="layout">
+      <!-- FRONT -->
+      <div class="body-wrap">
+        <h3>Front</h3>
+        <svg viewBox="0 0 200 480" xmlns="http://www.w3.org/2000/svg" aria-label="Male front anatomy">
+          <!-- silhouette -->
+          <ellipse class="silhouette" cx="100" cy="28" rx="22" ry="26"/>
+          <path class="silhouette" d="M78 52 Q100 58 122 52 L128 95 Q100 105 72 95 Z"/>
+          <rect class="silhouette" x="72" y="95" width="56" height="95" rx="8"/>
+          <path class="silhouette" d="M72 185 L55 320 L75 320 L85 200 L100 200 L115 320 L145 320 L128 185 Z"/>
+          <path class="silhouette" d="M55 320 L48 455 L72 455 L78 340 L85 320 Z"/>
+          <path class="silhouette" d="M145 320 L152 455 L128 455 L122 340 L115 320 Z"/>
+          <path class="silhouette" d="M72 100 L35 175 L48 185 L78 120 Z"/>
+          <path class="silhouette" d="M128 100 L165 175 L152 185 L122 120 Z"/>
+          <path class="silhouette" d="M35 175 L18 250 L32 255 L50 185 Z"/>
+          <path class="silhouette" d="M165 175 L182 250 L168 255 L150 185 Z"/>
+
+          <!-- muscles front -->
+          <ellipse class="muscle" data-m="traps" cx="100" cy="62" rx="18" ry="8"/>
+          <path class="muscle" data-m="chest" d="M78 78 Q100 95 122 78 L120 115 Q100 125 80 115 Z"/>
+          <path class="muscle" data-m="front-delt" d="M72 70 L55 95 L70 110 L80 90 Z"/>
+          <path class="muscle" data-m="front-delt" d="M128 70 L145 95 L130 110 L120 90 Z"/>
+          <path class="muscle" data-m="biceps" d="M48 130 Q42 155 48 175 L60 170 Q58 150 58 130 Z"/>
+          <path class="muscle" data-m="biceps" d="M152 130 Q158 155 152 175 L140 170 Q142 150 142 130 Z"/>
+          <path class="muscle" data-m="forearms" d="M40 185 Q32 220 38 250 L50 245 Q48 215 52 185 Z"/>
+          <path class="muscle" data-m="forearms" d="M160 185 Q168 220 162 250 L150 245 Q152 215 148 185 Z"/>
+          <path class="muscle" data-m="abs" d="M88 120 L112 120 L110 185 L90 185 Z"/>
+          <path class="muscle" data-m="obliques" d="M78 125 L88 125 L88 185 L72 175 Z"/>
+          <path class="muscle" data-m="obliques" d="M122 125 L112 125 L112 185 L128 175 Z"/>
+          <path class="muscle" data-m="quads" d="M78 200 L95 200 L92 310 L72 300 Z"/>
+          <path class="muscle" data-m="quads" d="M122 200 L105 200 L108 310 L128 300 Z"/>
+          <path class="muscle" data-m="hip-flexors" d="M85 185 L100 195 L115 185 L110 205 L90 205 Z"/>
+          <path class="muscle" data-m="calves" d="M72 340 L85 340 L82 420 L68 415 Z"/>
+          <path class="muscle" data-m="calves" d="M128 340 L115 340 L118 420 L132 415 Z"/>
+          <ellipse class="muscle" data-m="shoulders" cx="62" cy="88" rx="12" ry="14"/>
+          <ellipse class="muscle" data-m="shoulders" cx="138" cy="88" rx="12" ry="14"/>
+        </svg>
+      </div>
+
+      <!-- BACK -->
+      <div class="body-wrap">
+        <h3>Back</h3>
+        <svg viewBox="0 0 200 480" xmlns="http://www.w3.org/2000/svg" aria-label="Male back anatomy">
+          <ellipse class="silhouette" cx="100" cy="28" rx="22" ry="26"/>
+          <path class="silhouette" d="M78 52 Q100 58 122 52 L128 95 Q100 105 72 95 Z"/>
+          <rect class="silhouette" x="72" y="95" width="56" height="95" rx="8"/>
+          <path class="silhouette" d="M72 185 L55 320 L75 320 L85 200 L100 200 L115 320 L145 320 L128 185 Z"/>
+          <path class="silhouette" d="M55 320 L48 455 L72 455 L78 340 L85 320 Z"/>
+          <path class="silhouette" d="M145 320 L152 455 L128 455 L122 340 L115 320 Z"/>
+          <path class="silhouette" d="M72 100 L35 175 L48 185 L78 120 Z"/>
+          <path class="silhouette" d="M128 100 L165 175 L152 185 L122 120 Z"/>
+          <path class="silhouette" d="M35 175 L18 250 L32 255 L50 185 Z"/>
+          <path class="silhouette" d="M165 175 L182 250 L168 255 L150 185 Z"/>
+
+          <path class="muscle" data-m="traps" d="M78 55 L122 55 L118 95 L100 110 L82 95 Z"/>
+          <path class="muscle" data-m="rear-delt" d="M72 70 L55 95 L70 105 L82 85 Z"/>
+          <path class="muscle" data-m="rear-delt" d="M128 70 L145 95 L130 105 L118 85 Z"/>
+          <path class="muscle" data-m="lats" d="M78 100 L88 100 L85 175 L72 165 Z"/>
+          <path class="muscle" data-m="lats" d="M122 100 L112 100 L115 175 L128 165 Z"/>
+          <path class="muscle" data-m="rhomboids" d="M90 95 L110 95 L108 130 L92 130 Z"/>
+          <path class="muscle" data-m="erectors" d="M94 110 L106 110 L104 195 L96 195 Z"/>
+          <path class="muscle" data-m="triceps" d="M48 125 Q40 155 48 175 L60 168 Q56 145 58 125 Z"/>
+          <path class="muscle" data-m="triceps" d="M152 125 Q160 155 152 175 L140 168 Q144 145 142 125 Z"/>
+          <path class="muscle" data-m="forearms" d="M40 185 Q32 220 38 250 L50 245 Q48 215 52 185 Z"/>
+          <path class="muscle" data-m="forearms" d="M160 185 Q168 220 162 250 L150 245 Q152 215 148 185 Z"/>
+          <path class="muscle" data-m="glutes" d="M75 185 L100 195 L125 185 L122 235 L78 235 Z"/>
+          <path class="muscle" data-m="hamstrings" d="M78 240 L95 240 L92 330 L72 320 Z"/>
+          <path class="muscle" data-m="hamstrings" d="M122 240 L105 240 L108 330 L128 320 Z"/>
+          <path class="muscle" data-m="calves" d="M72 340 L85 340 L82 420 L68 415 Z"/>
+          <path class="muscle" data-m="calves" d="M128 340 L115 340 L118 420 L132 415 Z"/>
+          <ellipse class="muscle" data-m="shoulders" cx="62" cy="88" rx="12" ry="14"/>
+          <ellipse class="muscle" data-m="shoulders" cx="138" cy="88" rx="12" ry="14"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="card info" id="infoBox">
+      <h3 id="infoTitle">Select an exercise</h3>
+      <p id="infoDesc">Muscles light up in red (primary) and orange (secondary).</p>
+      <div class="tags" id="infoTags"></div>
+    </div>
+
+    <footer>
+      Matches exercises from
+      <a href="https://rambleon700.github.io/GRKettlebell-/KettlebellGR.html">Kettlebell Logbook</a>
+      · Simplified male anatomy · Estimates only
+    </footer>
+  </div>
+
+  <script>
+    const MUSCLE_LABELS = {
+      traps: 'Traps',
+      chest: 'Chest',
+      shoulders: 'Shoulders',
+      'front-delt': 'Front delts',
+      'rear-delt': 'Rear delts',
+      biceps: 'Biceps',
+      triceps: 'Triceps',
+      forearms: 'Forearms / grip',
+      lats: 'Lats',
+      rhomboids: 'Rhomboids',
+      erectors: 'Erector spinae',
+      abs: 'Abs',
+      obliques: 'Obliques',
+      'hip-flexors': 'Hip flexors',
+      quads: 'Quads',
+      glutes: 'Glutes',
+      hamstrings: 'Hamstrings',
+      calves: 'Calves'
+    };
+
+    // primary / secondary muscle keys per exercise
+    const MAP = {
+      'Kettlebell Swings': {
+        p: ['glutes', 'hamstrings', 'erectors'],
+        s: ['abs', 'obliques', 'lats', 'shoulders', 'forearms', 'quads']
+      },
+      'Two-Handed Swings': {
+        p: ['glutes', 'hamstrings', 'erectors'],
+        s: ['abs', 'obliques', 'lats', 'shoulders', 'forearms', 'quads']
+      },
+      'One-Arm Swings': {
+        p: ['glutes', 'hamstrings', 'erectors', 'obliques'],
+        s: ['abs', 'lats', 'shoulders', 'forearms', 'quads']
+      },
+      'American Swings': {
+        p: ['glutes', 'hamstrings', 'erectors', 'shoulders'],
+        s: ['abs', 'obliques', 'lats', 'traps', 'forearms', 'quads']
+      },
+      'Shoulder Press': {
+        p: ['shoulders', 'front-delt', 'triceps'],
+        s: ['traps', 'abs', 'obliques', 'chest']
+      },
+      'Overhead Press': {
+        p: ['shoulders', 'front-delt', 'triceps'],
+        s: ['traps', 'abs', 'obliques', 'chest']
+      },
+      'Forward Press': {
+        p: ['shoulders', 'front-delt', 'chest', 'triceps'],
+        s: ['abs', 'obliques']
+      },
+      'Clean': {
+        p: ['glutes', 'hamstrings', 'traps', 'forearms'],
+        s: ['quads', 'abs', 'erectors', 'shoulders', 'biceps']
+      },
+      'Clean & Press': {
+        p: ['glutes', 'hamstrings', 'shoulders', 'triceps', 'traps'],
+        s: ['quads', 'abs', 'obliques', 'forearms', 'erectors']
+      },
+      'Snatch': {
+        p: ['glutes', 'hamstrings', 'shoulders', 'traps', 'erectors'],
+        s: ['quads', 'abs', 'obliques', 'lats', 'triceps', 'forearms']
+      },
+      'Goblet Squats': {
+        p: ['quads', 'glutes'],
+        s: ['abs', 'erectors', 'hamstrings', 'calves', 'shoulders']
+      },
+      'Deadlift': {
+        p: ['glutes', 'hamstrings', 'erectors'],
+        s: ['traps', 'forearms', 'quads', 'lats', 'abs']
+      },
+      'Plank Pull Through': {
+        p: ['abs', 'obliques', 'shoulders'],
+        s: ['chest', 'lats', 'glutes', 'forearms']
+      },
+      'Plank Drags': {
+        p: ['abs', 'obliques', 'shoulders'],
+        s: ['chest', 'lats', 'forearms', 'glutes']
+      },
+      'Twist on Knees': {
+        p: ['obliques', 'abs'],
+        s: ['shoulders', 'hip-flexors']
+      },
+      'Half Knee Woodchop': {
+        p: ['obliques', 'abs', 'shoulders'],
+        s: ['glutes', 'quads', 'chest']
+      },
+      'Towel Reaper': {
+        p: ['abs', 'obliques', 'shoulders'],
+        s: ['forearms', 'lats', 'glutes']
+      },
+      'Russian Twists': {
+        p: ['obliques', 'abs'],
+        s: ['hip-flexors', 'shoulders']
+      },
+      'Sitting Twist': {
+        p: ['obliques', 'abs'],
+        s: ['hip-flexors']
+      },
+      'Standing Twist': {
+        p: ['obliques', 'abs'],
+        s: ['glutes', 'shoulders']
+      },
+      'Axe Swings / Woodchoppers': {
+        p: ['obliques', 'abs', 'shoulders'],
+        s: ['glutes', 'quads', 'chest', 'lats']
+      },
+      'Halo': {
+        p: ['shoulders', 'traps'],
+        s: ['abs', 'obliques', 'chest', 'rear-delt']
+      },
+      'Upright Row': {
+        p: ['shoulders', 'traps', 'front-delt'],
+        s: ['biceps', 'forearms', 'rear-delt']
+      },
+      'Bicep Curls': {
+        p: ['biceps'],
+        s: ['forearms', 'front-delt']
+      },
+      'Tricep Overhead': {
+        p: ['triceps'],
+        s: ['shoulders', 'abs']
+      },
+      'Turkish Get-Up': {
+        p: ['shoulders', 'abs', 'obliques', 'glutes'],
+        s: ['quads', 'hamstrings', 'triceps', 'traps', 'lats', 'hip-flexors']
+      },
+      'Single-Arm Row': {
+        p: ['lats', 'rhomboids', 'rear-delt'],
+        s: ['biceps', 'forearms', 'traps', 'erectors']
+      },
+      'Windmill': {
+        p: ['obliques', 'shoulders', 'hamstrings'],
+        s: ['glutes', 'abs', 'erectors', 'triceps']
+      },
+      'Figure-8': {
+        p: ['abs', 'obliques', 'shoulders'],
+        s: ['forearms', 'glutes', 'lats']
+      },
+      'Around the World': {
+        p: ['shoulders', 'abs', 'obliques'],
+        s: ['forearms', 'chest', 'traps']
+      },
+      'Farmers Carry': {
+        p: ['forearms', 'traps', 'abs'],
+        s: ['shoulders', 'obliques', 'glutes', 'calves', 'erectors']
+      }
+    };
+
+    const select = document.getElementById('exerciseSelect');
+    const buttons = document.getElementById('exButtons');
+    const title = document.getElementById('infoTitle');
+    const desc = document.getElementById('infoDesc');
+    const tags = document.getElementById('infoTags');
+
+    // build quick-pick buttons
+    Object.keys(MAP).forEach(name => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ex-btn';
+      b.textContent = name;
+      b.dataset.ex = name;
+      b.addEventListener('click', () => {
+        select.value = name;
+        applyExercise(name);
+      });
+      buttons.appendChild(b);
+    });
+
+    select.addEventListener('change', () => applyExercise(select.value));
+
+    function clearMuscles() {
+      document.querySelectorAll('.muscle').forEach(el => {
+        el.classList.remove('primary', 'secondary');
+      });
+    }
+
+    function applyExercise(name) {
+      clearMuscles();
+      document.querySelectorAll('.ex-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.ex === name);
+      });
+
+      if (!name || !MAP[name]) {
+        title.textContent = 'Select an exercise';
+        desc.textContent = 'Muscles light up in red (primary) and orange (secondary).';
+        tags.innerHTML = '';
+        return;
+      }
+
+      const { p, s } = MAP[name];
+      document.querySelectorAll('.muscle').forEach(el => {
+        const m = el.getAttribute('data-m');
+        if (p.includes(m)) el.classList.add('primary');
+        else if (s.includes(m)) el.classList.add('secondary');
+      });
+
+      title.textContent = name;
+      desc.textContent = 'Highlighted regions are approximate targets for typical form.';
+      tags.innerHTML = '';
+      p.forEach(m => {
+        const t = document.createElement('span');
+        t.className = 'tag p';
+        t.textContent = MUSCLE_LABELS[m] || m;
+        tags.appendChild(t);
+      });
+      s.forEach(m => {
+        const t = document.createElement('span');
+        t.className = 'tag s';
+        t.textContent = MUSCLE_LABELS[m] || m;
+        tags.appendChild(t);
+      });
+    }
+  </script>
+</body>
+</html>
