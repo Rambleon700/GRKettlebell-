@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kettlebell Phase Map</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --accent: #e67e22;
+      --text: #ecf0f1;
+      --muted: #95a5a6;
+      --border: #2c3e50;
+      --peak: #e74c3c;
+      --high: #e67e22;
+      --mod: #f1c40f;
+      --phase: #3498db;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    header {
+      text-align: center;
+      padding: 1.25rem 0 1rem;
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: 1.25rem;
+    }
+    header h1 { font-size: 1.7rem; color: var(--accent); }
+    header p { color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem; }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.15rem;
+      margin-bottom: 1.15rem;
+      border: 1px solid var(--border);
+    }
+    .card h2 { font-size: 1.1rem; margin-bottom: 0.85rem; color: var(--accent); }
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.25rem; }
+    select {
+      width: 100%; max-width: 420px;
+      padding: 0.65rem 0.8rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1rem;
+    }
+    select:focus { outline: none; border-color: var(--accent); }
+
+    /* Swing variations */
+    .swing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.65rem;
+      margin-bottom: 0.85rem;
+    }
+    .swing-card {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .swing-card:hover { border-color: var(--accent); }
+    .swing-card.active {
+      border-color: var(--accent);
+      background: rgba(230,126,34,0.12);
+    }
+    .swing-card h3 {
+      font-size: 0.95rem;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+    .swing-card .tagline {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .swing-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-bottom: 0.45rem;
+    }
+    .swing-meta span {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.15rem 0.4rem;
+      border-radius: 999px;
+      background: rgba(52,152,219,0.15);
+      color: #85c1e9;
+    }
+    .swing-card ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      font-size: 0.78rem;
+      color: var(--text);
+    }
+    .swing-card li { margin-bottom: 0.2rem; }
+    .compare-note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 0.75rem;
+    }
+    .compare-table th, .compare-table td {
+      padding: 0.45rem 0.4rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .compare-table th {
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+    }
+    .compare-table tr:hover td { background: rgba(230,126,34,0.06); }
+
+    .exercise-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.45rem;
+      margin-top: 0.75rem;
+    }
+    .ex-btn {
+      padding: 0.5rem 0.6rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: left;
+    }
+    .ex-btn:hover { border-color: var(--accent); }
+    .ex-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    .meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .badge.pattern { background: rgba(230,126,34,0.2); color: #f5b041; }
+    .badge.plane { background: rgba(52,152,219,0.2); color: #85c1e9; }
+    .badge.tempo { background: rgba(39,174,96,0.2); color: #82e0aa; }
+
+    .timeline { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 1rem 0; }
+    .phase-chip {
+      flex: 1; min-width: 100px;
+      padding: 0.75rem 0.6rem;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .phase-chip:hover { border-color: var(--phase); }
+    .phase-chip.active {
+      border-color: var(--accent);
+      background: rgba(230,126,34,0.15);
+    }
+    .phase-chip .num {
+      display: block; font-size: 0.7rem; color: var(--muted);
+      text-transform: uppercase;
+    }
+    .phase-chip .name {
+      display: block; font-weight: 700; font-size: 0.9rem; margin-top: 0.15rem;
+    }
+    .phase-chip.active .name { color: var(--accent); }
+
+    .phase-detail {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .phase-detail h3 { color: var(--accent); font-size: 1.15rem; margin-bottom: 0.4rem; }
+    .phase-detail .what { color: var(--muted); font-size: 0.95rem; margin-bottom: 0.85rem; }
+    .section-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin: 0.75rem 0 0.4rem;
+    }
+    .act-list { display: flex; flex-direction: column; gap: 0.45rem; }
+    .act-row {
+      display: grid;
+      grid-template-columns: 120px 1fr 56px;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    @media (max-width: 500px) {
+      .act-row { grid-template-columns: 95px 1fr 48px; }
+    }
+    .act-name { font-size: 0.85rem; font-weight: 600; }
+    .act-track {
+      height: 12px;
+      background: #243044;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .act-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.35s ease;
+    }
+    .act-fill.peak { background: linear-gradient(90deg, #c0392b, var(--peak)); width: 100%; }
+    .act-fill.high { background: linear-gradient(90deg, #d35400, var(--high)); width: 72%; }
+    .act-fill.mod  { background: linear-gradient(90deg, #b7950b, var(--mod)); width: 42%; }
+    .act-level {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      text-align: right;
+    }
+    .act-level.peak { color: var(--peak); }
+    .act-level.high { color: var(--high); }
+    .act-level.mod  { color: var(--mod); }
+    .cues { list-style: none; }
+    .cues li {
+      padding: 0.35rem 0 0.35rem 1.1rem;
+      position: relative;
+      font-size: 0.9rem;
+    }
+    .cues li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .play-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn:hover { background: #d35400; }
+    .progress-track {
+      flex: 1; min-width: 120px; height: 6px;
+      background: var(--border); border-radius: 3px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    .legend {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      font-size: 0.85rem; color: var(--muted); margin-top: 0.75rem;
+    }
+    .legend i {
+      display: inline-block; width: 12px; height: 12px;
+      border-radius: 3px; margin-right: 0.3rem; vertical-align: middle;
+    }
+    .legend .peak { background: var(--peak); }
+    .legend .high { background: var(--high); }
+    .legend .mod { background: var(--mod); }
+    .empty { text-align: center; padding: 2rem; color: var(--muted); }
+    .note { font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; font-style: italic; }
+    footer {
+      text-align: center; padding: 1.25rem 0;
+      color: var(--muted); font-size: 0.8rem;
+    }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Kettlebell Phase Map</h1>
+      <p>Swing variations · phases · activation bars · cues</p>
+    </header>
+
+    <!-- SWING VARIATIONS -->
+    <div class="card" id="swingSection">
+      <h2>Swing variations</h2>
+      <p class="compare-note" style="margin-top:0;margin-bottom:0.75rem;">
+        Same hinge engine for all. Differences are height, hands, and what peaks at the top.
+        Tap a card to open its phase map.
+      </p>
+      <div class="swing-grid" id="swingGrid">
+        <button type="button" class="swing-card" data-ex="Kettlebell Swings">
+          <h3>Russian / standard</h3>
+          <p class="tagline">Chest-height · two hands (default)</p>
+          <div class="swing-meta">
+            <span>Chest height</span>
+            <span>2 hands</span>
+            <span>Best default</span>
+          </div>
+          <ul>
+            <li>Hips drive; arms guide</li>
+            <li>Float: glutes + abs peak</li>
+            <li>Lowest shoulder demand</li>
+          </ul>
+        </button>
+        <button type="button" class="swing-card" data-ex="Two-Handed Swings">
+          <h3>Two-handed</h3>
+          <p class="tagline">Same as Russian · shared grip</p>
+          <div class="swing-meta">
+            <span>Chest height</span>
+            <span>2 hands</span>
+            <span>Volume</span>
+          </div>
+          <ul>
+            <li>Bilateral hip drive</li>
+            <li>Even grip load</li>
+            <li>Ideal for higher reps</li>
+          </ul>
+        </button>
+        <button type="button" class="swing-card" data-ex="One-Arm Swings">
+          <h3>One-arm</h3>
+          <p class="tagline">Chest-height · anti-rotation</p>
+          <div class="swing-meta">
+            <span>Chest height</span>
+            <span>1 hand</span>
+            <span>Core</span>
+          </div>
+          <ul>
+            <li>Obliques peak every phase</li>
+            <li>Exposes L/R differences</li>
+            <li>Bridge to clean / snatch</li>
+          </ul>
+        </button>
+        <button type="button" class="swing-card" data-ex="American Swings">
+          <h3>American</h3>
+          <p class="tagline">Full overhead · longer cycle</p>
+          <div class="swing-meta">
+            <span>Overhead</span>
+            <span>2 hands</span>
+            <span>More ROM</span>
+          </div>
+          <ul>
+            <li>Same drive as Russian</li>
+            <li>Lockout: shoulders + traps peak</li>
+            <li>Needs solid overhead mobility</li>
+          </ul>
+        </button>
+      </div>
+
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Variation</th>
+            <th>Top height</th>
+            <th>Hands</th>
+            <th>What changes vs Russian</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Russian / Two-handed</td>
+            <td>Chest / eye</td>
+            <td>2</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>One-arm</td>
+            <td>Chest / eye</td>
+            <td>1</td>
+            <td>Anti-rotation (obliques high/peak all phases)</td>
+          </tr>
+          <tr>
+            <td>American</td>
+            <td>Full overhead</td>
+            <td>2</td>
+            <td>Extra lockout phase: shoulders, traps, triceps</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="compare-note">Shared rule: <strong style="color:var(--text)">hips drive, arms guide</strong>. If the arms lift the bell, timing is off.</p>
+    </div>
+
+    <div class="card">
+      <h2>All exercises</h2>
+      <label for="exerciseSelect">Exercise</label>
+      <select id="exerciseSelect"><option value="">— Choose or tap below —</option></select>
+      <div class="exercise-grid" id="exButtons"></div>
+    </div>
+
+    <div class="card">
+      <div id="emptyState" class="empty">Select a swing variation or any exercise to see phases and activation bars.</div>
+      <div id="analysis" style="display:none;">
+        <div class="meta" id="metaBadges"></div>
+        <h2 id="exTitle" style="margin-bottom:0.5rem;"></h2>
+        <p id="exSummary" style="color:var(--muted);font-size:0.9rem;margin-bottom:0.5rem;"></p>
+        <div id="swingDiff" class="compare-note" style="display:none;margin-bottom:0.75rem;"></div>
+        <div class="timeline" id="timeline"></div>
+        <div class="phase-detail">
+          <h3 id="phaseName">—</h3>
+          <p class="what" id="phaseWhat"></p>
+          <div class="section-label">Muscle activation (relative in this phase)</div>
+          <div class="act-list" id="actList"></div>
+          <p class="note">Peak / High / Moderate = relative demand in this phase, not lab MVC %.</p>
+          <div class="section-label">Cues</div>
+          <ul class="cues" id="phaseCues"></ul>
+        </div>
+        <div class="play-bar">
+          <button type="button" class="btn" id="btnPrev">‹ Prev</button>
+          <button type="button" class="btn" id="btnPlay">▶ Play phases</button>
+          <button type="button" class="btn" id="btnNext">Next ›</button>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <div class="legend">
+          <span><i class="peak"></i> Peak</span>
+          <span><i class="high"></i> High</span>
+          <span><i class="mod"></i> Moderate</span>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Matches <a href="https://rambleon700.github.io/GRKettlebell-/KettlebellGR.html">Kettlebell Logbook</a>
+    </footer>
+  </div>
+
+  <script>
+    const LEVEL_ORDER = { peak: 0, high: 1, mod: 2 };
+    const SWING_KEYS = ['Kettlebell Swings', 'Two-Handed Swings', 'One-Arm Swings', 'American Swings'];
+
+    const SWING_DIFF = {
+      'Kettlebell Swings': 'Baseline Russian swing: float stops ~chest height; shoulders stay moderate.',
+      'Two-Handed Swings': 'Same phases as Russian; bilateral grip. Prefer this label for pure 2H volume logging.',
+      'One-Arm Swings': 'Vs Russian: obliques rise to high/peak in every phase (anti-rotation). Keep hips square.',
+      'American Swings': 'Vs Russian: drive is the same; lockout continues overhead — shoulders & traps peak; longer cycle.'
+    };
+
+    const PHASE_DATA = {
+      'Kettlebell Swings': {
+        pattern: 'Hinge', plane: 'Sagittal', tempo: 'Ballistic',
+        summary: 'Russian swing — hip-driven pendulum to chest height.',
+        phases: [
+          { name: 'Hike / load', what: 'Bell behind the legs; hips flex; posterior chain lengthens.',
+            act: [{m:'Hamstrings',l:'peak'},{m:'Erectors',l:'high'},{m:'Glutes',l:'mod'},{m:'Forearms',l:'mod'},{m:'Lats',l:'mod'}],
+            cues: ['Hinge, don’t squat','Shins more vertical','Neutral spine','Arms relaxed'] },
+          { name: 'Drive', what: 'Explosive hip extension accelerates the bell forward and up.',
+            act: [{m:'Glutes',l:'peak'},{m:'Hamstrings',l:'peak'},{m:'Quads',l:'mod'},{m:'Erectors',l:'high'},{m:'Abs',l:'mod'}],
+            cues: ['Snap hips through','Stand tall','Don’t pull with arms'] },
+          { name: 'Float', what: 'Bell ~chest height; brief float; trunk braces against extension.',
+            act: [{m:'Glutes',l:'peak'},{m:'Abs',l:'peak'},{m:'Shoulders',l:'mod'},{m:'Forearms',l:'mod'}],
+            cues: ['Brace abs at the top','Soft elbows','Eyes forward'] },
+          { name: 'Return', what: 'Guide path back into the next hinge.',
+            act: [{m:'Hamstrings',l:'high'},{m:'Hip flexors',l:'mod'},{m:'Lats',l:'mod'},{m:'Forearms',l:'mod'}],
+            cues: ['Hinge to meet the bell','Don’t collapse the chest'] }
+        ]
+      },
+      'Two-Handed Swings': {
+        pattern: 'Hinge', plane: 'Sagittal', tempo: 'Ballistic',
+        summary: 'Two-hand Russian swing — shared grip, bilateral drive.',
+        phases: [
+          { name: 'Hike / load', what: 'Both hands on the bell; load the hinge.',
+            act: [{m:'Hamstrings',l:'peak'},{m:'Erectors',l:'high'},{m:'Glutes',l:'mod'},{m:'Forearms',l:'high'}],
+            cues: ['Even grip','Hips back','Chest open'] },
+          { name: 'Drive', what: 'Bilateral hip extension powers the bell up.',
+            act: [{m:'Glutes',l:'peak'},{m:'Hamstrings',l:'peak'},{m:'Abs',l:'mod'},{m:'Quads',l:'mod'}],
+            cues: ['Symmetrical drive','Arms as ropes'] },
+          { name: 'Float', what: 'Chest height; lock glutes and brace core.',
+            act: [{m:'Glutes',l:'peak'},{m:'Abs',l:'peak'},{m:'Shoulders',l:'mod'}],
+            cues: ['No lean-back'] },
+          { name: 'Return', what: 'Controlled path back into the hinge.',
+            act: [{m:'Hamstrings',l:'high'},{m:'Forearms',l:'mod'},{m:'Lats',l:'mod'}],
+            cues: ['Guide, don’t yank'] }
+        ]
+      },
+      'One-Arm Swings': {
+        pattern: 'Hinge + anti-rotate', plane: 'Sagittal + transverse', tempo: 'Ballistic',
+        summary: 'One-arm Russian swing — same hips, extra trunk anti-rotation.',
+        phases: [
+          { name: 'Hike / load', what: 'Single-arm load; torso resists twisting.',
+            act: [{m:'Hamstrings',l:'peak'},{m:'Obliques',l:'high'},{m:'Glutes',l:'mod'},{m:'Erectors',l:'high'},{m:'Forearms',l:'high'}],
+            cues: ['Square shoulders','Free hand can counterbalance'] },
+          { name: 'Drive', what: 'Hip snap; ribs stacked; no spin of the torso.',
+            act: [{m:'Glutes',l:'peak'},{m:'Hamstrings',l:'peak'},{m:'Obliques',l:'peak'},{m:'Abs',l:'high'},{m:'Lats',l:'mod'}],
+            cues: ['Hips square','Don’t let the shoulder dip'] },
+          { name: 'Float', what: 'Chest height; grip and trunk hold.',
+            act: [{m:'Glutes',l:'high'},{m:'Obliques',l:'peak'},{m:'Abs',l:'peak'},{m:'Shoulders',l:'mod'},{m:'Forearms',l:'high'}],
+            cues: ['Brace hard'] },
+          { name: 'Return', what: 'Bell returns; keep hips level.',
+            act: [{m:'Hamstrings',l:'high'},{m:'Obliques',l:'high'},{m:'Forearms',l:'mod'}],
+            cues: ['Control the arc'] }
+        ]
+      },
+      'American Swings': {
+        pattern: 'Hinge → overhead', plane: 'Sagittal', tempo: 'Ballistic',
+        summary: 'American swing — same drive, continues to full overhead lockout.',
+        phases: [
+          { name: 'Hike / load', what: 'Deep hinge; same as Russian load.',
+            act: [{m:'Hamstrings',l:'peak'},{m:'Glutes',l:'mod'},{m:'Erectors',l:'high'},{m:'Forearms',l:'mod'}],
+            cues: ['Same solid hinge'] },
+          { name: 'Drive', what: 'Hip extension; arms stay long past chest height.',
+            act: [{m:'Glutes',l:'peak'},{m:'Hamstrings',l:'peak'},{m:'Abs',l:'mod'},{m:'Quads',l:'mod'}],
+            cues: ['Hips finish first','Then guide overhead'] },
+          { name: 'Overhead lockout', what: 'Bell stacked over shoulders — main difference vs Russian.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Traps',l:'peak'},{m:'Triceps',l:'high'},{m:'Glutes',l:'peak'},{m:'Abs',l:'peak'}],
+            cues: ['Ears between arms','Ribs down','Don’t over-arch'] },
+          { name: 'Return', what: 'Pull down the arc into the next hinge.',
+            act: [{m:'Lats',l:'high'},{m:'Hamstrings',l:'high'},{m:'Abs',l:'mod'},{m:'Forearms',l:'mod'}],
+            cues: ['Active guide down'] }
+        ]
+      },
+      'Shoulder Press': {
+        pattern: 'Vertical push', plane: 'Sagittal', tempo: 'Grind',
+        summary: 'Strict press from rack to lockout.',
+        phases: [
+          { name: 'Rack', what: 'Bell in rack; braced.',
+            act: [{m:'Abs',l:'peak'},{m:'Obliques',l:'high'},{m:'Glutes',l:'mod'},{m:'Forearms',l:'mod'}],
+            cues: ['Wrist neutral','Ribs down'] },
+          { name: 'Press', what: 'Vertical drive.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Triceps',l:'peak'},{m:'Traps',l:'high'},{m:'Abs',l:'high'}],
+            cues: ['Push the floor away'] },
+          { name: 'Lockout', what: 'Arm straight; stacked.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Triceps',l:'high'},{m:'Abs',l:'peak'},{m:'Glutes',l:'high'}],
+            cues: ['Squeeze glutes'] },
+          { name: 'Lower', what: 'Controlled eccentric.',
+            act: [{m:'Shoulders',l:'high'},{m:'Triceps',l:'high'},{m:'Abs',l:'mod'}],
+            cues: ['Same path down'] }
+        ]
+      },
+      'Overhead Press': {
+        pattern: 'Vertical push', plane: 'Sagittal', tempo: 'Grind',
+        summary: 'Full overhead stack.',
+        phases: [
+          { name: 'Set-up', what: 'Rack; braced trunk.',
+            act: [{m:'Abs',l:'peak'},{m:'Glutes',l:'mod'},{m:'Forearms',l:'mod'}],
+            cues: ['Feet rooted'] },
+          { name: 'Press', what: 'Vertical drive.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Triceps',l:'peak'},{m:'Traps',l:'high'}],
+            cues: ['Path close to head'] },
+          { name: 'Lockout', what: 'Stacked joints.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Abs',l:'peak'},{m:'Triceps',l:'high'},{m:'Glutes',l:'high'}],
+            cues: ['Reach tall'] },
+          { name: 'Lower', what: 'Slow return.',
+            act: [{m:'Shoulders',l:'high'},{m:'Triceps',l:'mod'}],
+            cues: ['Control the eccentric'] }
+        ]
+      },
+      'Forward Press': {
+        pattern: 'Horizontal push', plane: 'Sagittal', tempo: 'Grind',
+        summary: 'Press away from the chest.',
+        phases: [
+          { name: 'Hold', what: 'Bell at chest.',
+            act: [{m:'Abs',l:'peak'},{m:'Chest',l:'mod'},{m:'Shoulders',l:'mod'}],
+            cues: ['Brace'] },
+          { name: 'Press out', what: 'Extend arms forward.',
+            act: [{m:'Chest',l:'peak'},{m:'Shoulders',l:'peak'},{m:'Triceps',l:'high'},{m:'Abs',l:'high'}],
+            cues: ['Don’t flare ribs'] },
+          { name: 'Lockout', what: 'Arms extended.',
+            act: [{m:'Chest',l:'high'},{m:'Triceps',l:'peak'},{m:'Abs',l:'peak'}],
+            cues: ['Glutes on'] },
+          { name: 'Return', what: 'Pull back under control.',
+            act: [{m:'Chest',l:'high'},{m:'Shoulders',l:'mod'}],
+            cues: ['Slow eccentric'] }
+        ]
+      },
+      'Clean': {
+        pattern: 'Hinge → rack', plane: 'Sagittal', tempo: 'Ballistic',
+        summary: 'Hinge power to the rack.',
+        phases: [
+          { name: 'Hike', what: 'Load posterior chain.',
+            act: [{m:'Hamstrings',l:'peak'},{m:'Glutes',l:'high'},{m:'Erectors',l:'high'}],
+            cues: ['Same as swing hike'] },
+          { name: 'Pull / zip', what: 'Bell rises close; elbow tucks.',
+            act: [{m:'Glutes',l:'peak'},{m:'Hamstrings',l:'peak'},{m:'Traps',l:'high'},{m:'Lats',l:'mod'}],
+            cues: ['Keep bell close'] },
+          { name: 'Rack catch', what: 'Soft catch on the forearm.',
+            act: [{m:'Abs',l:'peak'},{m:'Shoulders',l:'high'},{m:'Forearms',l:'peak'}],
+            cues: ['No wrist smash'] },
+          { name: 'Reset', what: 'Reverse to hike or floor.',
+            act: [{m:'Abs',l:'high'},{m:'Hamstrings',l:'mod'}],
+            cues: ['Guide the drop'] }
+        ]
+      },
+      'Clean & Press': {
+        pattern: 'Hinge + push', plane: 'Sagittal', tempo: 'Ballistic → grind',
+        summary: 'Clean then press.',
+        phases: [
+          { name: 'Clean', what: 'Hinge to rack.',
+            act: [{m:'Glutes',l:'peak'},{m:'Hamstrings',l:'peak'},{m:'Traps',l:'high'}],
+            cues: ['Solid rack'] },
+          { name: 'Dip (optional)', what: 'Slight dip if push-press.',
+            act: [{m:'Quads',l:'peak'},{m:'Glutes',l:'high'},{m:'Abs',l:'mod'}],
+            cues: ['Quick dip'] },
+          { name: 'Press', what: 'Drive to lockout.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Triceps',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Finish tall'] },
+          { name: 'Lower & recycle', what: 'Lower then hike.',
+            act: [{m:'Shoulders',l:'high'},{m:'Abs',l:'mod'}],
+            cues: ['Control each segment'] }
+        ]
+      },
+      'Snatch': {
+        pattern: 'Hinge → overhead', plane: 'Sagittal', tempo: 'Ballistic',
+        summary: 'Hike to overhead in one path.',
+        phases: [
+          { name: 'Hike', what: 'Deep hinge.',
+            act: [{m:'Hamstrings',l:'peak'},{m:'Glutes',l:'high'},{m:'Erectors',l:'high'}],
+            cues: ['Aggressive hike'] },
+          { name: 'Acceleration', what: 'Hip snap; bell close.',
+            act: [{m:'Glutes',l:'peak'},{m:'Hamstrings',l:'peak'},{m:'Traps',l:'high'}],
+            cues: ['Hips first'] },
+          { name: 'Punch-through', what: 'Hand punches; soft overhead catch.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Traps',l:'peak'},{m:'Triceps',l:'high'},{m:'Abs',l:'high'}],
+            cues: ['Don’t loop the bell'] },
+          { name: 'Lockout', what: 'Full stand; locked arm.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Abs',l:'peak'},{m:'Glutes',l:'peak'}],
+            cues: ['Stack the joints'] },
+          { name: 'Return', what: 'Pull into hike.',
+            act: [{m:'Lats',l:'high'},{m:'Hamstrings',l:'high'}],
+            cues: ['Active descent'] }
+        ]
+      },
+      'Goblet Squats': {
+        pattern: 'Squat', plane: 'Sagittal', tempo: 'Grind',
+        summary: 'Bell at chest; upright trunk.',
+        phases: [
+          { name: 'Set-up', what: 'Feet set; bell at chest.',
+            act: [{m:'Abs',l:'high'},{m:'Shoulders',l:'mod'}],
+            cues: ['Chest tall'] },
+          { name: 'Descent', what: 'Sit between hips.',
+            act: [{m:'Quads',l:'peak'},{m:'Glutes',l:'high'},{m:'Abs',l:'high'}],
+            cues: ['Knees out'] },
+          { name: 'Bottom', what: 'Tension held at depth.',
+            act: [{m:'Quads',l:'peak'},{m:'Glutes',l:'peak'},{m:'Abs',l:'peak'}],
+            cues: ['Brace'] },
+          { name: 'Ascent', what: 'Drive to stand.',
+            act: [{m:'Quads',l:'peak'},{m:'Glutes',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Finish tall'] }
+        ]
+      },
+      'Deadlift': {
+        pattern: 'Hinge', plane: 'Sagittal', tempo: 'Grind',
+        summary: 'Slow hinge pull.',
+        phases: [
+          { name: 'Set-up', what: 'Hinge and grip; spine long.',
+            act: [{m:'Erectors',l:'peak'},{m:'Hamstrings',l:'high'},{m:'Forearms',l:'high'}],
+            cues: ['Lats on'] },
+          { name: 'Pull', what: 'Hips and shoulders rise together.',
+            act: [{m:'Glutes',l:'peak'},{m:'Hamstrings',l:'peak'},{m:'Erectors',l:'peak'}],
+            cues: ['Don’t shoot hips first'] },
+          { name: 'Lockout', what: 'Hips through; tall.',
+            act: [{m:'Glutes',l:'peak'},{m:'Erectors',l:'high'},{m:'Abs',l:'high'}],
+            cues: ['Ribs down'] },
+          { name: 'Lower', what: 'Hinge; bell close to legs.',
+            act: [{m:'Hamstrings',l:'peak'},{m:'Erectors',l:'high'}],
+            cues: ['Push hips back'] }
+        ]
+      },
+      'Plank Pull Through': {
+        pattern: 'Anti-rotate + core', plane: 'Transverse', tempo: 'Controlled',
+        summary: 'Plank; drag without rocking hips.',
+        phases: [
+          { name: 'Plank set', what: 'Straight body line.',
+            act: [{m:'Abs',l:'peak'},{m:'Shoulders',l:'peak'},{m:'Glutes',l:'high'}],
+            cues: ['Don’t sag'] },
+          { name: 'Reach & grip', what: 'One hand reaches.',
+            act: [{m:'Obliques',l:'peak'},{m:'Shoulders',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Wide feet if needed'] },
+          { name: 'Drag', what: 'Pull under torso.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'peak'},{m:'Shoulders',l:'high'},{m:'Forearms',l:'high'}],
+            cues: ['Hips level'] },
+          { name: 'Reset', what: 'Switch sides.',
+            act: [{m:'Abs',l:'peak'},{m:'Shoulders',l:'high'}],
+            cues: ['Re-brace'] }
+        ]
+      },
+      'Plank Drags': {
+        pattern: 'Anti-rotate + core', plane: 'Transverse', tempo: 'Controlled',
+        summary: 'Continuous anti-rotation drag.',
+        phases: [
+          { name: 'Brace', what: 'Strong plank.',
+            act: [{m:'Abs',l:'peak'},{m:'Shoulders',l:'peak'},{m:'Glutes',l:'high'}],
+            cues: ['Full tension'] },
+          { name: 'Drag', what: 'Side to side under body.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'peak'},{m:'Shoulders',l:'high'}],
+            cues: ['Quiet hips'] },
+          { name: 'Switch', what: 'Change hands.',
+            act: [{m:'Obliques',l:'peak'},{m:'Shoulders',l:'high'}],
+            cues: ['Maintain line'] }
+        ]
+      },
+      'Twist on Knees': {
+        pattern: 'Rotation', plane: 'Transverse', tempo: 'Controlled',
+        summary: 'Kneeling rotation; quiet hips.',
+        phases: [
+          { name: 'Set', what: 'Tall kneel.',
+            act: [{m:'Abs',l:'high'},{m:'Glutes',l:'peak'}],
+            cues: ['Long spine'] },
+          { name: 'Rotate', what: 'Turn shoulders; pelvis stable.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Move from ribcage'] },
+          { name: 'Return', what: 'Through centre.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Smooth tempo'] }
+        ]
+      },
+      'Half Knee Woodchop': {
+        pattern: 'Rotation', plane: 'Transverse + sagittal', tempo: 'Controlled / power',
+        summary: 'Half-kneeling diagonal chop.',
+        phases: [
+          { name: 'Set-up', what: 'Half-kneel; bell high.',
+            act: [{m:'Glutes',l:'peak'},{m:'Obliques',l:'high'}],
+            cues: ['Tall torso'] },
+          { name: 'Chop', what: 'Diagonal across body.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'peak'},{m:'Shoulders',l:'high'},{m:'Glutes',l:'high'}],
+            cues: ['Hips face forward'] },
+          { name: 'Finish', what: 'Low opposite side.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'peak'}],
+            cues: ['Don’t round'] },
+          { name: 'Return', what: 'Reverse path.',
+            act: [{m:'Obliques',l:'high'},{m:'Shoulders',l:'high'}],
+            cues: ['Same path back'] }
+        ]
+      },
+      'Towel Reaper': {
+        pattern: 'Core + shoulder', plane: 'Mixed', tempo: 'Controlled',
+        summary: 'Towel grip; sweep arc.',
+        phases: [
+          { name: 'Grip & brace', what: 'Secure grip; brace.',
+            act: [{m:'Forearms',l:'peak'},{m:'Abs',l:'peak'}],
+            cues: ['Ribs down'] },
+          { name: 'Sweep', what: 'Arc; resist lean.',
+            act: [{m:'Obliques',l:'peak'},{m:'Shoulders',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Hips quiet'] },
+          { name: 'Finish', what: 'Brace at end range.',
+            act: [{m:'Abs',l:'peak'},{m:'Shoulders',l:'high'},{m:'Forearms',l:'high'}],
+            cues: ['Re-brace'] }
+        ]
+      },
+      'Russian Twists': {
+        pattern: 'Rotation', plane: 'Transverse', tempo: 'Controlled',
+        summary: 'Seated rotation.',
+        phases: [
+          { name: 'Set', what: 'Sit back; hold bell.',
+            act: [{m:'Abs',l:'peak'},{m:'Hip flexors',l:'high'}],
+            cues: ['Chest up'] },
+          { name: 'Twist', what: 'Rotate side to side.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Move as one unit'] },
+          { name: 'Centre', what: 'Through midline.',
+            act: [{m:'Abs',l:'peak'},{m:'Obliques',l:'high'}],
+            cues: ['Steady breath'] }
+        ]
+      },
+      'Sitting Twist': {
+        pattern: 'Rotation', plane: 'Transverse', tempo: 'Controlled',
+        summary: 'Seated twist, stable base.',
+        phases: [
+          { name: 'Posture', what: 'Sit tall; brace.',
+            act: [{m:'Abs',l:'peak'},{m:'Hip flexors',l:'mod'}],
+            cues: ['Sit tall'] },
+          { name: 'Rotate', what: 'Controlled turns.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Controllable range'] }
+        ]
+      },
+      'Standing Twist': {
+        pattern: 'Rotation', plane: 'Transverse', tempo: 'Controlled',
+        summary: 'Standing rotation; feet rooted.',
+        phases: [
+          { name: 'Stance', what: 'Athletic stance.',
+            act: [{m:'Glutes',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Feet grip floor'] },
+          { name: 'Twist', what: 'Rotate trunk.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'high'},{m:'Glutes',l:'mod'}],
+            cues: ['No lumbar hyperextension'] },
+          { name: 'Return', what: 'Through centre.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Smooth reverse'] }
+        ]
+      },
+      'Axe Swings / Woodchoppers': {
+        pattern: 'Rotation', plane: 'Transverse', tempo: 'Power or controlled',
+        summary: 'Standing diagonal chop.',
+        phases: [
+          { name: 'Load high', what: 'Bell high to one side.',
+            act: [{m:'Obliques',l:'high'},{m:'Shoulders',l:'high'}],
+            cues: ['Eyes can follow'] },
+          { name: 'Chop down', what: 'Diagonal drive.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'peak'},{m:'Glutes',l:'high'},{m:'Shoulders',l:'high'}],
+            cues: ['Power from core and hips'] },
+          { name: 'Low finish', what: 'Outside opposite hip.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'peak'}],
+            cues: ['Don’t round'] },
+          { name: 'Reverse', what: 'Same diagonal up.',
+            act: [{m:'Obliques',l:'high'},{m:'Shoulders',l:'high'}],
+            cues: ['Control ascent'] }
+        ]
+      },
+      'Halo': {
+        pattern: 'Shoulder mobility + core', plane: 'Transverse', tempo: 'Controlled',
+        summary: 'Bell circles the head.',
+        phases: [
+          { name: 'Front', what: 'Bell in front of face.',
+            act: [{m:'Shoulders',l:'high'},{m:'Abs',l:'peak'}],
+            cues: ['Ribs down'] },
+          { name: 'Around', what: 'Circle behind; no lean.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Traps',l:'high'},{m:'Obliques',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Head still'] },
+          { name: 'Complete', what: 'Return to front.',
+            act: [{m:'Shoulders',l:'high'},{m:'Abs',l:'peak'}],
+            cues: ['Smooth motion'] }
+        ]
+      },
+      'Upright Row': {
+        pattern: 'Vertical pull', plane: 'Sagittal', tempo: 'Grind',
+        summary: 'Elbows lead up.',
+        phases: [
+          { name: 'Hang', what: 'Bell at thighs.',
+            act: [{m:'Forearms',l:'mod'},{m:'Abs',l:'mod'}],
+            cues: ['Shoulders packed'] },
+          { name: 'Pull', what: 'Elbows out and up.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Traps',l:'peak'},{m:'Biceps',l:'mod'}],
+            cues: ['Comfortable height'] },
+          { name: 'Top', what: 'Brief pause.',
+            act: [{m:'Traps',l:'peak'},{m:'Shoulders',l:'high'}],
+            cues: ['Neck long'] },
+          { name: 'Lower', what: 'Slow eccentric.',
+            act: [{m:'Shoulders',l:'high'},{m:'Traps',l:'high'}],
+            cues: ['Control'] }
+        ]
+      },
+      'Bicep Curls': {
+        pattern: 'Isolation pull', plane: 'Sagittal', tempo: 'Grind',
+        summary: 'Elbow flexion only.',
+        phases: [
+          { name: 'Start', what: 'Arms long; braced.',
+            act: [{m:'Biceps',l:'mod'},{m:'Forearms',l:'mod'}],
+            cues: ['Elbows pinned'] },
+          { name: 'Curl', what: 'Flex without swing.',
+            act: [{m:'Biceps',l:'peak'},{m:'Forearms',l:'high'}],
+            cues: ['No hip help'] },
+          { name: 'Squeeze', what: 'Peak at top.',
+            act: [{m:'Biceps',l:'peak'}],
+            cues: ['Soft wrists'] },
+          { name: 'Lower', what: 'Full extension.',
+            act: [{m:'Biceps',l:'high'}],
+            cues: ['Controlled'] }
+        ]
+      },
+      'Tricep Overhead': {
+        pattern: 'Isolation push', plane: 'Sagittal', tempo: 'Grind',
+        summary: 'Overhead elbow extension.',
+        phases: [
+          { name: 'Overhead hold', what: 'Elbows up.',
+            act: [{m:'Triceps',l:'high'},{m:'Shoulders',l:'high'},{m:'Abs',l:'peak'}],
+            cues: ['Ribs down'] },
+          { name: 'Lower', what: 'Bend elbows.',
+            act: [{m:'Triceps',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['Only elbows move'] },
+          { name: 'Extend', what: 'Lock out.',
+            act: [{m:'Triceps',l:'peak'},{m:'Abs',l:'high'}],
+            cues: ['No rib flare'] }
+        ]
+      },
+      'Turkish Get-Up': {
+        pattern: 'Full-body complex', plane: 'Multiplanar', tempo: 'Slow grind',
+        summary: 'Segmented stand under load.',
+        phases: [
+          { name: 'Roll to elbow', what: 'Press; roll to elbow.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Abs',l:'peak'},{m:'Obliques',l:'peak'}],
+            cues: ['Eyes on bell'] },
+          { name: 'To post', what: 'Hand posts; hips down.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Obliques',l:'peak'},{m:'Triceps',l:'high'}],
+            cues: ['Stack under bell'] },
+          { name: 'Hip bridge', what: 'Hips high.',
+            act: [{m:'Glutes',l:'peak'},{m:'Abs',l:'peak'},{m:'Shoulders',l:'peak'}],
+            cues: ['Strong leg drive'] },
+          { name: 'Leg sweep', what: 'To half-kneel.',
+            act: [{m:'Obliques',l:'peak'},{m:'Glutes',l:'high'},{m:'Shoulders',l:'peak'}],
+            cues: ['Eyes on bell'] },
+          { name: 'Stand', what: 'Lunge to stand.',
+            act: [{m:'Quads',l:'peak'},{m:'Glutes',l:'peak'},{m:'Shoulders',l:'peak'},{m:'Abs',l:'peak'}],
+            cues: ['Tall finish'] }
+        ]
+      },
+      'Single-Arm Row': {
+        pattern: 'Horizontal pull', plane: 'Sagittal', tempo: 'Grind',
+        summary: 'Row; anti-rotate trunk.',
+        phases: [
+          { name: 'Set-up', what: 'Hinge; spine long.',
+            act: [{m:'Erectors',l:'high'},{m:'Abs',l:'mod'}],
+            cues: ['Square hips'] },
+          { name: 'Row', what: 'Elbow to hip.',
+            act: [{m:'Lats',l:'peak'},{m:'Rhomboids',l:'peak'},{m:'Rear delts',l:'high'},{m:'Biceps',l:'high'}],
+            cues: ['Don’t twist open'] },
+          { name: 'Squeeze', what: 'Peak at top.',
+            act: [{m:'Lats',l:'peak'},{m:'Rhomboids',l:'peak'}],
+            cues: ['Keep hinge'] },
+          { name: 'Lower', what: 'Full hang.',
+            act: [{m:'Lats',l:'high'},{m:'Forearms',l:'mod'}],
+            cues: ['Feel the lat'] }
+        ]
+      },
+      'Windmill': {
+        pattern: 'Hinge + lateral + overhead', plane: 'Frontal + sagittal', tempo: 'Slow grind',
+        summary: 'Overhead lock; hinge to the side.',
+        phases: [
+          { name: 'Overhead lock', what: 'Arm locked overhead.',
+            act: [{m:'Shoulders',l:'peak'},{m:'Abs',l:'peak'},{m:'Glutes',l:'high'}],
+            cues: ['Hard lockout'] },
+          { name: 'Hinge & reach', what: 'Hip out; free hand down leg.',
+            act: [{m:'Obliques',l:'peak'},{m:'Hamstrings',l:'peak'},{m:'Shoulders',l:'peak'},{m:'Glutes',l:'high'}],
+            cues: ['Overhead arm vertical'] },
+          { name: 'Bottom', what: 'Depth as mobility allows.',
+            act: [{m:'Hamstrings',l:'peak'},{m:'Obliques',l:'peak'},{m:'Shoulders',l:'peak'}],
+            cues: ['Weight in the hip'] },
+          { name: 'Rise', what: 'Back to tall lockout.',
+            act: [{m:'Glutes',l:'peak'},{m:'Obliques',l:'peak'},{m:'Shoulders',l:'peak'}],
+            cues: ['Chest leads up'] }
+        ]
+      },
+      'Figure-8': {
+        pattern: 'Core + coordination', plane: 'Transverse', tempo: 'Flow',
+        summary: 'Figure-8 through the legs.',
+        phases: [
+          { name: 'Athletic stance', what: 'Feet wide; soft knees.',
+            act: [{m:'Abs',l:'peak'},{m:'Glutes',l:'high'}],
+            cues: ['Chest up'] },
+          { name: 'Pass through', what: 'Handoff between legs.',
+            act: [{m:'Obliques',l:'peak'},{m:'Forearms',l:'peak'},{m:'Shoulders',l:'high'},{m:'Abs',l:'high'}],
+            cues: ['Eyes forward'] },
+          { name: 'Catch & continue', what: 'Other hand; keep flow.',
+            act: [{m:'Forearms',l:'peak'},{m:'Obliques',l:'high'}],
+            cues: ['Smooth handoffs'] }
+        ]
+      },
+      'Around the World': {
+        pattern: 'Core + shoulder', plane: 'Transverse', tempo: 'Controlled flow',
+        summary: 'Bell circles at hip height.',
+        phases: [
+          { name: 'Circle front → side', what: 'Pass around hips.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'peak'},{m:'Shoulders',l:'high'},{m:'Forearms',l:'high'}],
+            cues: ['Hips still'] },
+          { name: 'Behind', what: 'Behind body; no lean.',
+            act: [{m:'Obliques',l:'peak'},{m:'Abs',l:'peak'},{m:'Shoulders',l:'high'}],
+            cues: ['Squeeze glutes'] },
+          { name: 'Complete', what: 'Return to front.',
+            act: [{m:'Abs',l:'peak'},{m:'Obliques',l:'high'}],
+            cues: ['Steady breath'] }
+        ]
+      },
+      'Farmers Carry': {
+        pattern: 'Loaded carry', plane: 'Sagittal (locomotion)', tempo: 'Steady',
+        summary: 'Walk under load.',
+        phases: [
+          { name: 'Pick-up', what: 'Hinge; stand tall.',
+            act: [{m:'Glutes',l:'peak'},{m:'Forearms',l:'peak'},{m:'Hamstrings',l:'high'},{m:'Erectors',l:'high'}],
+            cues: ['Neutral spine'] },
+          { name: 'Walk', what: 'Short steps; upright.',
+            act: [{m:'Forearms',l:'peak'},{m:'Traps',l:'peak'},{m:'Abs',l:'peak'},{m:'Obliques',l:'high'},{m:'Glutes',l:'high'}],
+            cues: ['No side lean'] },
+          { name: 'Set-down', what: 'Hinge to floor.',
+            act: [{m:'Hamstrings',l:'peak'},{m:'Glutes',l:'high'},{m:'Erectors',l:'high'},{m:'Forearms',l:'high'}],
+            cues: ['Same care as pick-up'] }
+        ]
+      }
+    };
+
+    const select = document.getElementById('exerciseSelect');
+    const buttons = document.getElementById('exButtons');
+    const emptyState = document.getElementById('emptyState');
+    const analysis = document.getElementById('analysis');
+    let currentEx = null;
+    let currentPhase = 0;
+    let playTimer = null;
+
+    Object.keys(PHASE_DATA).forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      select.appendChild(opt);
+
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ex-btn';
+      b.textContent = name;
+      b.dataset.ex = name;
+      b.addEventListener('click', () => {
+        select.value = name;
+        loadExercise(name);
+      });
+      buttons.appendChild(b);
+    });
+
+    document.querySelectorAll('.swing-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const ex = card.dataset.ex;
+        select.value = ex;
+        loadExercise(ex);
+        document.getElementById('analysis').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    select.addEventListener('change', () => loadExercise(select.value));
+    document.getElementById('btnPrev').addEventListener('click', () => {
+      stopPlay();
+      if (!currentEx) return;
+      const n = PHASE_DATA[currentEx].phases.length;
+      currentPhase = (currentPhase - 1 + n) % n;
+      showPhase(currentPhase);
+    });
+    document.getElementById('btnNext').addEventListener('click', () => {
+      stopPlay();
+      if (!currentEx) return;
+      currentPhase = (currentPhase + 1) % PHASE_DATA[currentEx].phases.length;
+      showPhase(currentPhase);
+    });
+    document.getElementById('btnPlay').addEventListener('click', togglePlay);
+
+    function stopPlay() {
+      if (playTimer) {
+        clearInterval(playTimer);
+        playTimer = null;
+        document.getElementById('btnPlay').textContent = '▶ Play phases';
+      }
+    }
+    function togglePlay() {
+      if (!currentEx) return;
+      if (playTimer) { stopPlay(); return; }
+      document.getElementById('btnPlay').textContent = '■ Stop';
+      playTimer = setInterval(() => {
+        currentPhase = (currentPhase + 1) % PHASE_DATA[currentEx].phases.length;
+        showPhase(currentPhase);
+      }, 2200);
+    }
+
+    function loadExercise(name) {
+      stopPlay();
+      document.querySelectorAll('.ex-btn').forEach(b => b.classList.toggle('active', b.dataset.ex === name));
+      document.querySelectorAll('.swing-card').forEach(c => c.classList.toggle('active', c.dataset.ex === name));
+
+      if (!name || !PHASE_DATA[name]) {
+        currentEx = null;
+        emptyState.style.display = 'block';
+        analysis.style.display = 'none';
+        return;
+      }
+      currentEx = name;
+      currentPhase = 0;
+      emptyState.style.display = 'none';
+      analysis.style.display = 'block';
+
+      const data = PHASE_DATA[name];
+      document.getElementById('exTitle').textContent = name;
+      document.getElementById('exSummary').textContent = data.summary;
+      document.getElementById('metaBadges').innerHTML =
+        `<span class="badge pattern">${data.pattern}</span>` +
+        `<span class="badge plane">${data.plane}</span>` +
+        `<span class="badge tempo">${data.tempo}</span>`;
+
+      const diffEl = document.getElementById('swingDiff');
+      if (SWING_DIFF[name]) {
+        diffEl.style.display = 'block';
+        diffEl.innerHTML = '<strong style="color:var(--accent)">Swing note:</strong> ' + SWING_DIFF[name];
+      } else {
+        diffEl.style.display = 'none';
+      }
+
+      const timeline = document.getElementById('timeline');
+      timeline.innerHTML = '';
+      data.phases.forEach((ph, i) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'phase-chip' + (i === 0 ? ' active' : '');
+        chip.innerHTML = `<span class="num">Phase ${i + 1}</span><span class="name">${ph.name}</span>`;
+        chip.addEventListener('click', () => {
+          stopPlay();
+          currentPhase = i;
+          showPhase(i);
+        });
+        timeline.appendChild(chip);
+      });
+      showPhase(0);
+    }
+
+    function showPhase(i) {
+      const data = PHASE_DATA[currentEx];
+      const ph = data.phases[i];
+      currentPhase = i;
+      document.querySelectorAll('.phase-chip').forEach((c, idx) => c.classList.toggle('active', idx === i));
+      document.getElementById('phaseName').textContent = `Phase ${i + 1}: ${ph.name}`;
+      document.getElementById('phaseWhat').textContent = ph.what;
+      const sorted = [...ph.act].sort((a, b) => LEVEL_ORDER[a.l] - LEVEL_ORDER[b.l]);
+      document.getElementById('actList').innerHTML = sorted.map(a => `
+        <div class="act-row">
+          <span class="act-name">${a.m}</span>
+          <div class="act-track"><div class="act-fill ${a.l}"></div></div>
+          <span class="act-level ${a.l}">${a.l}</span>
+        </div>
+      `).join('');
+      document.getElementById('phaseCues').innerHTML = ph.cues.map(c => `<li>${c}</li>`).join('');
+      document.getElementById('progressFill').style.width = ((i + 1) / data.phases.length) * 100 + '%';
+    }
+  </script>
+</body>
+</html>
