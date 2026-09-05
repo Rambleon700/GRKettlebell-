@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kettlebell Mastery Program — Periodized Training Log</title>
+<style>
+  :root {
+    --bg: #14110f;
+    --panel: #1d1a17;
+    --accent: #d9822b;
+    --accent-soft: #f0b060;
+    --text: #ece6dd;
+    --muted: #a89c8c;
+    --border: #332c25;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+  h1 {
+    font-size: 1.8rem;
+    color: var(--accent-soft);
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 14px;
+    margin-bottom: 6px;
+  }
+  .intro {
+    color: var(--muted);
+    font-size: 0.98rem;
+    margin-bottom: 30px;
+  }
+  h2 {
+    font-size: 1.3rem;
+    color: var(--accent-soft);
+    margin-top: 46px;
+    margin-bottom: 4px;
+    padding: 10px 14px;
+    background: var(--panel);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+  }
+  h3 {
+    font-size: 1.05rem;
+    color: var(--text);
+    margin-top: 26px;
+    margin-bottom: 10px;
+  }
+  p { color: var(--text); }
+  strong { color: var(--accent-soft); }
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 34px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 24px;
+    background: var(--panel);
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 0.92rem;
+  }
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: #2a231c;
+    color: var(--accent-soft);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(217, 130, 43, 0.06); }
+  ul {
+    padding-left: 20px;
+  }
+  li { margin-bottom: 6px; }
+  .note {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .checkpoint-list li strong { color: var(--accent-soft); }
+
+  .meta {
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-bottom: 24px;
+    padding: 10px 14px;
+    background: var(--panel);
+    border-radius: 6px;
+  }
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 20px;
+    margin-bottom: 30px;
+    font-size: 0.92rem;
+  }
+  .toc a { color: var(--accent-soft); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .day-block {
+    margin-top: 34px;
+    padding: 16px 18px;
+    background: var(--panel);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .day-block h3 {
+    margin-top: 0;
+    color: var(--accent-soft);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+  .session-label {
+    display: inline-block;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--accent);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-weight: 600;
+  }
+  .doc-title {
+    margin-top: 60px;
+    padding-top: 20px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin: 2px 3px 2px 0;
+    color: #1a1712;
+    white-space: nowrap;
+  }
+  .b-quads   { background: #6fa8dc; }
+  .b-glutes  { background: #6fcf97; }
+  .b-back    { background: #b39ddb; }
+  .b-shoulders { background: #f2a65a; }
+  .b-arms    { background: #ef8a8a; }
+  .b-core    { background: #f0b060; }
+  .b-grip    { background: #4fc3c7; }
+
+  .legend {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 18px 0 30px;
+  }
+  .legend-title {
+    color: var(--accent-soft);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+
+  .muscle-map {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0 30px;
+  }
+  .muscle-map figure {
+    margin: 0;
+    text-align: center;
+  }
+  .muscle-map figcaption {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="toc">
+  <strong>Contents</strong><br>
+  <a href="#five-day-plan">5-Day Kettlebell Plan — Full Body, Core-Focused</a><br>
+  <a href="#mastery-program">Kettlebell Mastery Program — Periodized Training Log</a>
+</div>
+
+<h1 id="five-day-plan">5-Day Kettlebell Plan — Full Body, Core-Focused</h1>
+<div class="meta">
+  <strong>Equipment:</strong> 2×8kg, 1×12kg, 1×18kg &nbsp;|&nbsp;
+  <strong>Format:</strong> AM (30 min) + PM (30 min), 5 days/week &nbsp;|&nbsp;
+  <strong>No Turkish Get-Ups</strong>
+</div>
+<p class="intro">Every day touches core. AM sessions are strength-biased (heavier bells, compound lifts). PM sessions are core/conditioning-biased (lighter bells, higher reps, shorter rest). Body-part emphasis rotates so nothing gets overtrained across the week.</p>
+
+<div class="muscle-map">
+  <figure>
+    <svg width="140" height="260" viewBox="0 0 140 260" xmlns="http://www.w3.org/2000/svg">
+      <!-- head -->
+      <circle cx="70" cy="24" r="16" fill="#3a332a"/>
+      <!-- torso outline -->
+      <rect x="48" y="42" width="44" height="70" rx="14" fill="#3a332a"/>
+      <!-- core highlight -->
+      <rect x="52" y="70" width="36" height="38" rx="8" fill="#f0b060"/>
+      <!-- shoulders -->
+      <circle cx="46" cy="50" r="12" fill="#f2a65a"/>
+      <circle cx="94" cy="50" r="12" fill="#f2a65a"/>
+      <!-- arms (biceps) -->
+      <rect x="32" y="60" width="14" height="38" rx="7" fill="#ef8a8a"/>
+      <rect x="94" y="60" width="14" height="38" rx="7" fill="#ef8a8a"/>
+      <!-- forearms -->
+      <rect x="30" y="98" width="12" height="30" rx="6" fill="#4fc3c7"/>
+      <rect x="98" y="98" width="12" height="30" rx="6" fill="#4fc3c7"/>
+      <!-- glutes -->
+      <rect x="50" y="112" width="40" height="24" rx="10" fill="#6fcf97"/>
+      <!-- quads (front) -->
+      <rect x="50" y="136" width="17" height="55" rx="8" fill="#6fa8dc"/>
+      <rect x="73" y="136" width="17" height="55" rx="8" fill="#6fa8dc"/>
+      <!-- shins -->
+      <rect x="52" y="191" width="13" height="45" rx="6" fill="#3a332a"/>
+      <rect x="75" y="191" width="13" height="45" rx="6" fill="#3a332a"/>
+    </svg>
+    <figcaption>Front</figcaption>
+  </figure>
+  <figure>
+    <svg width="140" height="260" viewBox="0 0 140 260" xmlns="http://www.w3.org/2000/svg">
+      <!-- head -->
+      <circle cx="70" cy="24" r="16" fill="#3a332a"/>
+      <!-- upper back / traps -->
+      <rect x="48" y="42" width="44" height="34" rx="10" fill="#b39ddb"/>
+      <!-- lower back -->
+      <rect x="52" y="76" width="36" height="36" rx="8" fill="#b39ddb"/>
+      <!-- shoulders -->
+      <circle cx="46" cy="50" r="12" fill="#f2a65a"/>
+      <circle cx="94" cy="50" r="12" fill="#f2a65a"/>
+      <!-- arms (triceps) -->
+      <rect x="32" y="60" width="14" height="38" rx="7" fill="#ef8a8a"/>
+      <rect x="94" y="60" width="14" height="38" rx="7" fill="#ef8a8a"/>
+      <!-- forearms/grip -->
+      <rect x="30" y="98" width="12" height="30" rx="6" fill="#4fc3c7"/>
+      <rect x="98" y="98" width="12" height="30" rx="6" fill="#4fc3c7"/>
+      <!-- glutes -->
+      <rect x="50" y="112" width="40" height="24" rx="10" fill="#6fcf97"/>
+      <!-- hamstrings -->
+      <rect x="50" y="136" width="17" height="55" rx="8" fill="#6fcf97"/>
+      <rect x="73" y="136" width="17" height="55" rx="8" fill="#6fcf97"/>
+      <!-- calves -->
+      <rect x="52" y="191" width="13" height="45" rx="6" fill="#3a332a"/>
+      <rect x="75" y="191" width="13" height="45" rx="6" fill="#3a332a"/>
+    </svg>
+    <figcaption>Back</figcaption>
+  </figure>
+</div>
+
+<div class="legend">
+  <div class="legend-title">Muscle Group Key</div>
+  <span class="badge b-quads">Quads</span>
+  <span class="badge b-glutes">Glutes / Hamstrings</span>
+  <span class="badge b-back">Back</span>
+  <span class="badge b-shoulders">Shoulders</span>
+  <span class="badge b-arms">Arms (Biceps/Triceps)</span>
+  <span class="badge b-core">Core</span>
+  <span class="badge b-grip">Grip / Forearms</span>
+</div>
+
+<hr>
+
+<h2>Weekly Overview</h2>
+<table>
+<tr><th>Day</th><th>AM Focus</th><th>PM Focus</th></tr>
+<tr><td>1</td><td>Legs & Back (heavy)</td><td>Core Burner</td></tr>
+<tr><td>2</td><td>Shoulders & Arms</td><td>Core + Conditioning</td></tr>
+<tr><td>3</td><td>Legs / Posterior Chain</td><td>Core + Rotational</td></tr>
+<tr><td>4</td><td>Back / Pull</td><td>Core + Carries</td></tr>
+<tr><td>5</td><td>Full-Body Complex</td><td>Core Finisher + Mobility</td></tr>
+</table>
+<p class="note">General structure each session: 5 min warm-up → 20 min main work → 5 min cooldown/stretch.</p>
+
+<div class="day-block">
+<h3>Day 1</h3>
+<p><span class="session-label">AM</span><strong>Legs & Back (Heavy)</strong></p>
+<p class="note">Warm-up: arm circles, hip circles, bodyweight squats, cat-cow — 5 min</p>
+<table>
+<tr><th>Exercise</th><th>Load</th><th>Sets x Reps</th><th>Rest</th><th>Muscles</th></tr>
+<tr><td>Single-Arm Deadlift</td><td>18kg</td><td>4x8/side</td><td>45s</td><td><span class="badge b-glutes">Glutes/Hams</span><span class="badge b-back">Back</span><span class="badge b-core">Core</span></td></tr>
+<tr><td>Goblet Squat</td><td>18kg</td><td>4x10</td><td>45s</td><td><span class="badge b-quads">Quads</span><span class="badge b-glutes">Glutes</span><span class="badge b-core">Core</span></td></tr>
+<tr><td>Double-KB Bent-Over Row</td><td>2x8kg</td><td>3x10</td><td>45s</td><td><span class="badge b-back">Back</span><span class="badge b-arms">Biceps</span></td></tr>
+<tr><td>Single-Arm Suitcase Row</td><td>12kg</td><td>3x10/side</td><td>30s</td><td><span class="badge b-back">Back</span><span class="badge b-arms">Biceps</span><span class="badge b-core">Core</span></td></tr>
+<tr><td>Plank Shoulder Taps</td><td>BW</td><td>3x20 taps</td><td>30s</td><td><span class="badge b-core">Core</span><span class="badge b-shoulders">Shoulders</span></td></tr>
+</table>
+<p class="note">Cooldown: hip flexor + hamstring stretch — 5 min</p>
+
+<p><span class="session-label">PM</span><strong>Core Burner</strong></p>
+<p class="note">Warm-up: dead bug x10, bird dog x10/side — 5 min</p>
+<p>3 rounds, minimal rest between exercises, 60s between rounds:</p>
+<ul>
+  <li>KB Halo (12kg) x10/side <span class="badge b-shoulders">Shoulders</span><span class="badge b-core">Core</span></li>
+  <li>Russian Twist (8kg) x16 total <span class="badge b-core">Core (obliques)</span></li>
+  <li>Plank Drag (8kg, pull bell under body side to side) x10 <span class="badge b-core">Core</span><span class="badge b-shoulders">Shoulders</span></li>
+  <li>Hollow Hold x30s <span class="badge b-core">Core</span></li>
+  <li>Bicycle Crunch x20 <span class="badge b-core">Core (obliques)</span></li>
+</ul>
+<p>Finisher: 1 min plank hold <span class="badge b-core">Core</span></p>
+<p class="note">Cooldown: child's pose, spinal twist — 5 min</p>
+</div>
+
+<div class="day-block">
+<h3>Day 2</h3>
+<p><span class="session-label">AM</span><strong>Shoulders & Arms</strong></p>
+<p class="note">Warm-up: band-free arm swings, shoulder rolls, light double press with 8kg x5 — 5 min</p>
+<table>
+<tr><th>Exercise</th><th>Load</th><th>Sets x Reps</th><th>Rest</th><th>Muscles</th></tr>
+<tr><td>Single-Arm Overhead Press</td><td>12kg</td><td>4x8/side</td><td>45s</td><td><span class="badge b-shoulders">Shoulders</span><span class="badge b-arms">Triceps</span><span class="badge b-core">Core</span></td></tr>
+<tr><td>Double-KB Push Press</td><td>2x8kg</td><td>3x8</td><td>45s</td><td><span class="badge b-shoulders">Shoulders</span><span class="badge b-arms">Triceps</span><span class="badge b-quads">Legs (drive)</span></td></tr>
+<tr><td>Single-Arm Bicep Curl</td><td>12kg</td><td>3x10/side</td><td>30s</td><td><span class="badge b-arms">Biceps</span></td></tr>
+<tr><td>Overhead Tricep Extension (2-hand)</td><td>8kg</td><td>3x12</td><td>30s</td><td><span class="badge b-arms">Triceps</span></td></tr>
+<tr><td>Lateral Raise</td><td>8kg (each hand)</td><td>3x12</td><td>30s</td><td><span class="badge b-shoulders">Shoulders</span></td></tr>
+<tr><td>Front Rack Hold (static)</td><td>2x8kg</td><td>2x30s</td><td>30s</td><td><span class="badge b-core">Core</span><span class="badge b-shoulders">Shoulders</span></td></tr>
+</table>
+<p class="note">Cooldown: shoulder + tricep stretch — 5 min</p>
+
+<p><span class="session-label">PM</span><strong>Core + Conditioning</strong></p>
+<p class="note">Warm-up: high knees, arm circles — 5 min</p>
+<p>4 rounds, 40s work / 20s rest:</p>
+<ul>
+  <li>KB Swing (18kg) <span class="badge b-glutes">Glutes/Hams</span><span class="badge b-core">Core</span></li>
+  <li>Mountain Climbers <span class="badge b-core">Core</span><span class="badge b-shoulders">Shoulders</span></li>
+  <li>Woodchopper (12kg, high-to-low) — split time L/R <span class="badge b-core">Core (obliques)</span><span class="badge b-shoulders">Shoulders</span></li>
+  <li>V-Sit Hold with KB (8kg pressed out) <span class="badge b-core">Core</span></li>
+  <li>Rest 60s between rounds</li>
+</ul>
+<p class="note">Cooldown: quad + chest stretch — 5 min</p>
+</div>
+
+<div class="day-block">
+<h3>Day 3</h3>
+<p><span class="session-label">AM</span><strong>Legs / Posterior Chain</strong></p>
+<p class="note">Warm-up: bodyweight glute bridges, ankle rolls, leg swings — 5 min</p>
+<table>
+<tr><th>Exercise</th><th>Load</th><th>Sets x Reps</th><th>Rest</th><th>Muscles</th></tr>
+<tr><td>Double-KB Front Squat</td><td>2x8kg</td><td>4x10</td><td>45s</td><td><span class="badge b-quads">Quads</span><span class="badge b-glutes">Glutes</span><span class="badge b-core">Core</span></td></tr>
+<tr><td>Single-Leg RDL</td><td>12kg</td><td>3x8/side</td><td>45s</td><td><span class="badge b-glutes">Hams/Glutes</span><span class="badge b-core">Core (balance)</span></td></tr>
+<tr><td>KB Swing</td><td>18kg</td><td>4x15</td><td>45s</td><td><span class="badge b-glutes">Glutes/Hams</span><span class="badge b-core">Core</span></td></tr>
+<tr><td>Reverse Lunge</td><td>12kg (goblet)</td><td>3x8/side</td><td>30s</td><td><span class="badge b-quads">Quads</span><span class="badge b-glutes">Glutes</span></td></tr>
+<tr><td>Glute Bridge March (KB on hips)</td><td>8kg</td><td>3x10/side</td><td>30s</td><td><span class="badge b-glutes">Glutes</span><span class="badge b-core">Core</span></td></tr>
+</table>
+<p class="note">Cooldown: hip flexor, calf, glute stretch — 5 min</p>
+
+<p><span class="session-label">PM</span><strong>Core + Rotational</strong></p>
+<p class="note">Warm-up: cat-cow, torso twists — 5 min</p>
+<p>3 rounds:</p>
+<ul>
+  <li>Windmill (12kg) x8/side <span class="badge b-core">Core (obliques)</span><span class="badge b-shoulders">Shoulders</span><span class="badge b-glutes">Hamstrings</span></li>
+  <li>Side Plank with Rotation (8kg) x10/side <span class="badge b-core">Core (obliques)</span><span class="badge b-shoulders">Shoulders</span></li>
+  <li>Anti-Rotation Press (Pallof-style, 8kg held at chest, step out/press) x10/side <span class="badge b-core">Core</span></li>
+  <li>Toe Touches x15 <span class="badge b-core">Core (abs)</span></li>
+  <li>Rest 60s between rounds</li>
+</ul>
+<p class="note">Cooldown: seated spinal twist, side stretch — 5 min</p>
+</div>
+
+<div class="day-block">
+<h3>Day 4</h3>
+<p><span class="session-label">AM</span><strong>Back / Pull</strong></p>
+<p class="note">Warm-up: band-free lat stretch, arm circles, scap pulls — 5 min</p>
+<table>
+<tr><th>Exercise</th><th>Load</th><th>Sets x Reps</th><th>Rest</th><th>Muscles</th></tr>
+<tr><td>Single-Arm Row</td><td>18kg</td><td>4x8/side</td><td>45s</td><td><span class="badge b-back">Back</span><span class="badge b-arms">Biceps</span></td></tr>
+<tr><td>Double-KB Row (bent-over)</td><td>2x8kg</td><td>3x10</td><td>45s</td><td><span class="badge b-back">Back</span><span class="badge b-arms">Biceps</span></td></tr>
+<tr><td>High Pull</td><td>12kg</td><td>3x10/side</td><td>30s</td><td><span class="badge b-back">Back</span><span class="badge b-shoulders">Shoulders</span></td></tr>
+<tr><td>Renegade Row</td><td>2x8kg</td><td>3x8/side</td><td>30s</td><td><span class="badge b-back">Back</span><span class="badge b-core">Core</span><span class="badge b-shoulders">Shoulders</span></td></tr>
+<tr><td>Reverse Snow Angel / Superman Hold</td><td>BW</td><td>3x10</td><td>30s</td><td><span class="badge b-back">Back (erectors)</span><span class="badge b-shoulders">Shoulders</span></td></tr>
+</table>
+<p class="note">Cooldown: lat + upper back stretch — 5 min</p>
+
+<p><span class="session-label">PM</span><strong>Core + Carries</strong></p>
+<p class="note">Warm-up: marching in place, arm swings — 5 min</p>
+<ul>
+  <li>Farmer's Carry (18kg + 12kg, one each hand) — 4x30m <span class="badge b-grip">Grip</span><span class="badge b-core">Core</span><span class="badge b-back">Traps</span></li>
+  <li>Suitcase Carry (single 18kg) — 3x20m/side <span class="badge b-core">Core (anti-lateral flexion)</span><span class="badge b-grip">Grip</span></li>
+  <li>Front-Rack Carry (2x8kg) — 3x20m <span class="badge b-core">Core</span><span class="badge b-shoulders">Shoulders</span></li>
+  <li>Plank Hold — 3x30s <span class="badge b-core">Core</span></li>
+  <li>Side Plank — 2x20s/side <span class="badge b-core">Core (obliques)</span></li>
+</ul>
+<p class="note">Cooldown: forearm + shoulder stretch — 5 min</p>
+</div>
+
+<div class="day-block">
+<h3>Day 5</h3>
+<p><span class="session-label">AM</span><strong>Full-Body Complex</strong></p>
+<p class="note">Warm-up: full-body dynamic flow — 5 min</p>
+<p>Perform as a complex (don't put the bell down within a round), 4 rounds, rest 60–90s between rounds.<br>
+<strong>Single-arm complex (switch sides each round), using 12kg:</strong></p>
+<ol>
+  <li>Deadlift x5 <span class="badge b-glutes">Glutes/Hams</span><span class="badge b-back">Back</span></li>
+  <li>Clean x5 <span class="badge b-back">Back</span><span class="badge b-shoulders">Shoulders</span><span class="badge b-quads">Legs</span></li>
+  <li>Front Squat x5 <span class="badge b-quads">Quads</span><span class="badge b-glutes">Glutes</span><span class="badge b-core">Core</span></li>
+  <li>Overhead Press x5 <span class="badge b-shoulders">Shoulders</span><span class="badge b-arms">Triceps</span></li>
+  <li>Reverse Lunge x5/leg <span class="badge b-quads">Quads</span><span class="badge b-glutes">Glutes</span></li>
+</ol>
+<p>Finish with 2 rounds double-KB (2x8kg): Swing x15 <span class="badge b-glutes">Glutes/Hams</span><span class="badge b-core">Core</span> → Goblet Squat x10 <span class="badge b-quads">Quads</span><span class="badge b-glutes">Glutes</span></p>
+<p class="note">Cooldown: full-body stretch flow — 5 min</p>
+
+<p><span class="session-label">PM</span><strong>Core Finisher + Mobility</strong></p>
+<p class="note">Warm-up: gentle spinal waves, hip circles — 5 min</p>
+<p>3 rounds, controlled pace:</p>
+<ul>
+  <li>Dead Bug x10/side <span class="badge b-core">Core</span></li>
+  <li>KB Sit-Up to Press (8kg) x10 <span class="badge b-core">Core</span><span class="badge b-shoulders">Shoulders</span></li>
+  <li>Flutter Kicks x30s <span class="badge b-core">Core (lower abs)</span></li>
+  <li>Bird Dog x10/side <span class="badge b-core">Core</span><span class="badge b-back">Back</span></li>
+  <li>Hollow Rock x15 <span class="badge b-core">Core</span></li>
+</ul>
+<p>Finish: 5 min mobility flow — thoracic rotations, hip openers, hamstring/hip flexor stretch, deep breathing</p>
+</div>
+
+<h2>Notes</h2>
+<ul>
+  <li><strong>Load logic:</strong> 18kg for the heaviest single-arm hinge/press/row patterns, 12kg for moderate single-arm and rotational work, 2×8kg for double-bell squats/presses/rows and higher-rep core work.</li>
+  <li><strong>Progression:</strong> once all sets/reps feel solid with good form for 2 weeks straight, add 1–2 reps per set before adding load.</li>
+  <li><strong>Recovery:</strong> if a session feels too much on top of the AM one, drop PM core work to 2 rounds instead of 3 — consistency across all 10 sessions matters more than intensity in any one.</li>
+  <li><strong>Form first</strong> on single-arm deadlifts, cleans, and swings — these carry the most injury risk if rushed under fatigue.</li>
+</ul>
+
+<h1 class="doc-title" id="mastery-program">Kettlebell Mastery Program</h1>
+<p class="intro">A 4-phase, ~18+ month progression from foundation to elite-level kettlebell performance. Log your sessions in the tables provided.</p>
+
+<hr>
+
+<h2>Phase 1: Foundation (Months 1–4)</h2>
+<p><strong>Goal:</strong> Bulletproof technique on the "big 4" — swing, goblet squat, get-up, clean. No load progression until movement quality is consistent.</p>
+
+<h3>Weekly Structure (4 sessions/week)</h3>
+<table>
+<tr><th>Day</th><th>Focus</th><th>Work</th></tr>
+<tr><td>Mon</td><td>Swing + Breathing</td><td>10 sets x 10 hardstyle swings, 45s rest. Anatomical breathing drill 2x5 min</td></tr>
+<tr><td>Tue</td><td>Get-Up Technical</td><td>5–10 total reps (slow, per side), no rush — quality only</td></tr>
+<tr><td>Thu</td><td>Goblet Squat + Clean</td><td>5x5 goblet squat, 8x3 clean per side</td></tr>
+<tr><td>Sat</td><td>GS Intro (Long Cycle basics)</td><td>5 sets x 5 min light continuous cycling at very light bell</td></tr>
+</table>
+
+<p><strong>Load guidance:</strong> Men: 16kg (start) → 20kg. Women: 8kg → 12kg. Progress only when form is unbroken for full sets.</p>
+<p class="note">Key metric to track: Rep quality (video yourself weekly), not weight.</p>
+
+<hr>
+
+<h2>Phase 2: Technical Refinement (Months 4–10)</h2>
+<p><strong>Goal:</strong> Build true GS jerk/long cycle mechanics + strength-endurance via ladders/waves/EDT.</p>
+
+<h3>Weekly Structure (5 sessions/week)</h3>
+<table>
+<tr><th>Day</th><th>Focus</th><th>Work</th></tr>
+<tr><td>Mon</td><td>Ladders (Strength)</td><td>Clean & Press ladder: 1-2-3 reps x 5 rungs, per side, 90s between rungs</td></tr>
+<tr><td>Tue</td><td>Long Cycle Technical</td><td>4 sets x 4 min continuous, focus on leg drive + bell parking</td></tr>
+<tr><td>Wed</td><td>Rest/Mobility</td><td>Wrist, shoulder, hip mobility (20 min)</td></tr>
+<tr><td>Thu</td><td>Waves (Volume)</td><td>Swing wave: 10-15-20-15-10, 60s rest between waves</td></tr>
+<tr><td>Sat</td><td>EDT Block</td><td>15 min: alternate clean & press / front squat every 90s, max quality reps</td></tr>
+</table>
+
+<p><strong>Load progression:</strong> Increase bell size only after hitting 10 clean minutes of Long Cycle at current weight with unbroken form.</p>
+<p class="note">Underused drill to add: Weak-side unilateral volume — add 30% extra reps on your non-dominant side every session.</p>
+
+<hr>
+
+<h2>Phase 3: Specialization (Months 10–18)</h2>
+<p>Choose ONE lane. Both are provided — pick based on your goal (raw strength vs. competitive GS).</p>
+
+<h3>Lane A: Hardstyle Strength (StrongFirst-style)</h3>
+<table>
+<tr><th>Day</th><th>Focus</th><th>Work</th></tr>
+<tr><td>Mon</td><td>Heavy Grind</td><td>5x5 heavy goblet/front squat, 5x3 heavy get-up</td></tr>
+<tr><td>Wed</td><td>Ballistic Power</td><td>10x5 heavy swings, explosive, full reset each rep</td></tr>
+<tr><td>Fri</td><td>Press Strength</td><td>5x5 strict press per side, ladder to a heavy single</td></tr>
+</table>
+
+<h3>Lane B: Sport GS (Competition Prep)</h3>
+<table>
+<tr><th>Day</th><th>Focus</th><th>Work</th></tr>
+<tr><td>Mon</td><td>Long Cycle Sets</td><td>2 x 10 min continuous at competition bell weight</td></tr>
+<tr><td>Wed</td><td>Pacing Practice</td><td>6 x 3 min at exact competition cadence (~1 rep/2-3 sec)</td></tr>
+<tr><td>Fri</td><td>Jerk Technical</td><td>100 reps broken into manageable sets, focus on soft knees/rack efficiency</td></tr>
+</table>
+
+<p class="note">Grip work (both lanes, 2x/week): Thick-handle carries, pinch grip holds, 3x30-60s.</p>
+
+<hr>
+
+<h2>Phase 4: Elite Refinement (18+ Months)</h2>
+<p><strong>Goal:</strong> Race-pace conditioning, contrast training, and recovery discipline.</p>
+
+<h3>Weekly Structure (5-6 sessions/week)</h3>
+<table>
+<tr><th>Day</th><th>Focus</th><th>Work</th></tr>
+<tr><td>Mon</td><td>Contrast Training</td><td>Heavy grind (3-5 reps) immediately followed by explosive ballistic (8-10 reps), 4 rounds</td></tr>
+<tr><td>Tue</td><td>Competition Pacing</td><td>Full event simulation at target cadence and heart-rate zone</td></tr>
+<tr><td>Wed</td><td>Active Recovery</td><td>Mobility + light technique work only</td></tr>
+<tr><td>Thu</td><td>Complex Training</td><td>Barbell/kettlebell combo — e.g., heavy squat + kettlebell swing superset</td></tr>
+<tr><td>Fri</td><td>Volume Long Cycle</td><td>Build toward full 10-min competition set at heavier bell</td></tr>
+<tr><td>Sun</td><td>Deload (every 3–4 weeks)</td><td>50% volume, technique focus only</td></tr>
+</table>
+
+<p><strong>Recovery protocols to institutionalize:</strong></p>
+<ul>
+  <li>Planned deload every 3–4 weeks regardless of how you feel</li>
+  <li>Callus/forearm care after every heavy session</li>
+  <li>Wrist and shoulder mobility as non-negotiable daily practice (10 min)</li>
+</ul>
+
+<hr>
+
+<h2>Tracking Template (copy weekly)</h2>
+<table>
+<tr><th>Week</th><th>Bell Weight</th><th>Best Set/Time</th><th>Technique Notes</th><th>Recovery Notes</th></tr>
+<tr><td>1</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>2</td><td></td><td></td><td></td><td></td></tr>
+</table>
+
+<h2>Progression Checkpoints</h2>
+<ul class="checkpoint-list">
+  <li><strong>End of Phase 1:</strong> Clean, unbroken form on all 4 foundational lifts for full prescribed volume</li>
+  <li><strong>End of Phase 2:</strong> 10 continuous minutes of Long Cycle at working weight</li>
+  <li><strong>End of Phase 3:</strong> Hit a lane-specific benchmark (heavy single press or full competition simulation)</li>
+  <li><strong>End of Phase 4:</strong> Sustained competition-pace performance across a full event distance</li>
+</ul>
+
+<p class="note">Reassess and adjust bell weights/volumes every 4 weeks based on the tracking template above.</p>
+
+</div>
+</body>
+</html>
