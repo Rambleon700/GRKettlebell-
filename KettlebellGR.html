@@ -4,7 +4,7 @@ we<!DOCTYPE html>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2260%22 fill=%22red%22>KB</text></svg>">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kettlebell Logbook – 12kg & 18kg</title>
+  <title>Kettlebell Logbook – 8kg,12kg,14kg & 18kg</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root {
@@ -339,6 +339,7 @@ we<!DOCTYPE html>
                   <option>Double Rack Carry</option>
                   <option>Sitting Z Press</option>
                   <option>Sitting Overhead Twist Trident</option>
+                  <option>Double Arm Shoulder Press</option>
                   <option>Overhead Goblet Press</option>
                   <option>Twist on Knees</option>
                   <option>Half Knee Woodchop</option>
@@ -359,7 +360,6 @@ we<!DOCTYPE html>
                   <option>Sitting Bicep Curls</option>
                   <option>Reverse Bicep Curls</option>
                   <option>Tricep Overhead</option>
-                  <option>Sitting Twist to Overhead</option>
                   <option>Sitting Woodchop</option>
                   <option>Single-Arm Row</option>
                   <option>Double Arm Row</option>
@@ -371,6 +371,7 @@ we<!DOCTYPE html>
                   <option>Single Leg RDL</option>
                   <option>Curl to Press to Tricep Extension</option>
                   <option>Half Crush Grip Goblet Press</option>
+                  <option>Standing Front Overhead </option>
                   <option>Other</option>
                 </optgroup>
               </select>
@@ -390,11 +391,11 @@ we<!DOCTYPE html>
           <div class="row">
             <div>
               <label for="sets">Sets</label>
-              <input type="number" id="sets" min="1" max="50" value="4" required>
+              <input type="number" id="sets" min="1" max="50" value="5" required>
             </div>
             <div>
               <label for="reps">Reps (per set)</label>
-              <input type="number" id="reps" min="1" max="200" value="12" required>
+              <input type="number" id="reps" min="1" max="200" value="15" required>
             </div>
           </div>
 
@@ -429,8 +430,12 @@ we<!DOCTYPE html>
             <label for="filterWeight">Weight</label>
             <select id="filterWeight">
               <option value="">All weights</option>
+              <option value="8">8 kg</option>
               <option value="12">12 kg</option>
+              <option value="14">14 kg</option>
+              <option value="16">16 kg</option>
               <option value="18">18 kg</option>
+              <option value="32">32 kg</option>
             </select>
           </div>
         </div>
@@ -593,21 +598,21 @@ we<!DOCTYPE html>
       let M = 1.0;
       if (ex.includes('american swing')) M = 1.08;
       else if (ex.includes('one-arm swing') || ex.includes('single-arm swing')) M = 1.05;
-      else if (ex.includes('swing')) M = 1.0;
+      else if (ex.includes('swing')) M = 1.05;
       else if (ex.includes('snatch')) M = 1.18;
       else if (ex.includes('clean') && ex.includes('press')) M = 1.22;
       else if (ex.includes('clean')) M = 1.10;
       else if (ex.includes('turkish') || ex.includes('get-up')) M = 1.30;
-      else if (ex.includes('deadlift')) M = 1.10;
+      else if (ex.includes('deadlift')) M = 1.15;
       else if (ex.includes('goblet') || ex.includes('squat')) M = 1.05;
       else if (ex.includes('press') || ex.includes('shoulder') || ex.includes('overhead')) M = 1.05;
       else if (ex.includes('row')) M = 0.95;
       else if (ex.includes('plank pull') || ex.includes('plank drag')) M = 1.05;
       else if (ex.includes('half knee woodchop') || (ex.includes('woodchop') && !ex.includes('axe'))) M = 1.05;
-      else if (ex.includes('towel reaper')) M = 1.00;
+      else if (ex.includes('towel reaper')) M = 1.05;
       else if (ex.includes('twist on knees') || ex.includes('sitting twist') || ex.includes('standing twist') || ex.includes('russian twist')) M = 0.95;
       else if (ex.includes('curl') || ex.includes('tricep') || ex.includes('halo') || ex.includes('figure') || ex.includes('around')) M = 0.85;
-      else if (ex.includes('farmers') || ex.includes('carry')) M = 0.90;
+      else if (ex.includes('farmers') || ex.includes('carry')) M = 1.05;
       else if (ex.includes('windmill') || ex.includes('axe')) M = 1.05;
       else M = 0.90;
 
